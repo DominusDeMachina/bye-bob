@@ -14,6 +14,10 @@ BUILD_TIME = $(shell date -u '+%Y-%m-%d_%H:%M:%S')
 # Go build flags
 LDFLAGS=-ldflags "-X main.Version=$(VERSION) -X main.BuildTime=$(BUILD_TIME)"
 
+# Paths to binaries
+TEMPL=$(HOME)/go/bin/templ
+AIR=$(HOME)/go/bin/air
+
 # Help target
 help: ## Display available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}'
@@ -22,7 +26,7 @@ help: ## Display available commands
 build: ## Build the Go application
 	@echo "Building $(BINARY_NAME)..."
 	@mkdir -p $(BUILD_DIR)
-	@templ generate
+	@$(TEMPL) generate
 	@go build $(LDFLAGS) -o $(BUILD_DIR)/$(BINARY_NAME) ./cmd/server
 
 # Run the application
@@ -33,7 +37,7 @@ run: build ## Run the application
 # Run with hot-reloading using Air
 dev: ## Run the application with hot-reloading (Air)
 	@echo "Starting development server with hot-reloading..."
-	@air
+	@$(AIR)
 
 # Build Docker image
 docker-build: ## Build the Docker image
@@ -84,7 +88,7 @@ lint: ## Run linting
 # Generate Templ templates
 templ: ## Generate Templ templates
 	@echo "Generating Templ templates..."
-	@templ generate
+	@$(TEMPL) generate
 
 # Install dependencies
 deps: ## Install dependencies
