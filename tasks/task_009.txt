@@ -1,0 +1,32 @@
+# Task ID: 9
+# Title: Assessment Template Builder
+# Status: pending
+# Dependencies: 2, 4, 5
+# Priority: medium
+# Description: Create a dynamic assessment template builder with multiple question types and template versioning.
+# Details:
+1. Design database schema for flexible question types
+2. Create models for assessment templates and questions
+3. Implement repository layer for templates and questions
+4. Create service layer with template management logic
+5. Implement template builder interface with HTMX
+6. Add support for multiple question types:
+   - Text input
+   - Rating scales
+   - Multiple choice
+   - Boolean (Yes/No)
+7. Implement drag-and-drop question reordering
+8. Add template versioning system
+9. Create template preview functionality
+10. Implement template assignment to positions
+11. Add template duplication feature
+12. Create template activation/deactivation
+
+# Test Strategy:
+1. Test template creation with all question types
+2. Verify question reordering works correctly
+3. Test template versioning maintains history
+4. Validate preview functionality shows accurate representation
+5. Test template assignment to positions
+6. Verify duplication creates exact copies
+7. Test activation/deactivation affects availability

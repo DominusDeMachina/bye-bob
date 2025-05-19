@@ -1,0 +1,24 @@
+FROM golang:1.24-alpine
+
+# Set the working directory
+WORKDIR /app
+
+# Install required packages and tools
+RUN apk add --no-cache git build-base && \
+    go install github.com/a-h/templ/cmd/templ@latest && \
+    go install github.com/air-verse/air@latest
+
+# Copy go mod files
+COPY go.mod go.sum* ./
+
+# Download dependencies
+RUN go mod download
+
+# Copy the source code
+COPY . .
+
+# Expose the application port
+EXPOSE 3000
+
+# Use Air for hot reloading in development
+CMD ["air", "-c", ".air.toml"] 

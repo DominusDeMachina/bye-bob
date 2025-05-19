@@ -1,0 +1,29 @@
+# Task ID: 12
+# Title: Manager Team View and Oversight
+# Status: pending
+# Dependencies: 10, 11
+# Priority: medium
+# Description: Implement manager views for team goals, assessments, and performance tracking with filtering and reporting.
+# Details:
+1. Create team dashboard for managers
+2. Implement direct report listing and filtering
+3. Create team goal overview
+4. Add team assessment status tracking
+5. Implement goal progress aggregation
+6. Create team performance metrics
+7. Add comment and feedback system
+8. Implement notification system for goal updates
+9. Create approval workflows for manager oversight
+10. Add reporting and export functionality
+11. Implement team visualization
+12. Create historical performance tracking
+
+# Test Strategy:
+1. Test team dashboard with various team sizes
+2. Verify direct report filtering works correctly
+3. Test goal overview accuracy
+4. Validate assessment status tracking
+5. Test progress aggregation calculations
+6. Verify performance metrics accuracy
+7. Test comment and feedback system
+8. Validate notification system for updates

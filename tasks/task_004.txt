@@ -1,0 +1,57 @@
+# Task ID: 4
+# Title: Core Template System with Templ
+# Status: pending
+# Dependencies: 1
+# Priority: high
+# Description: Set up the Templ templating system for type-safe HTML generation and create base layout templates for the application.
+# Details:
+1. Install and configure Templ
+2. Create base layout templates:
+   ```go
+   // layout.templ
+   package templates
+
+   templ Layout(title string) {
+     <!DOCTYPE html>
+     <html lang="en">
+       <head>
+         <meta charset="UTF-8" />
+         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+         <title>{title} - HR Management System</title>
+         <link href="/static/css/tailwind.css" rel="stylesheet" />
+         <script src="/static/js/htmx.min.js"></script>
+       </head>
+       <body class="bg-gray-50">
+         <header class="bg-white shadow">
+           <!-- Navigation component will go here -->
+         </header>
+         <main class="container mx-auto px-4 py-6">
+           {children...}
+         </main>
+         <footer class="bg-white border-t mt-auto py-4">
+           <div class="container mx-auto px-4">
+             <p class="text-center text-gray-500">© 2023 Enterprise HR Management System</p>
+           </div>
+         </footer>
+       </body>
+     </html>
+   }
+   ```
+3. Create navigation components for different user roles
+4. Set up component library for common UI elements:
+   - Form inputs and validation
+   - Tables with sorting and filtering
+   - Modal dialogs
+   - Notification components
+   - Loading indicators
+5. Configure Templ compilation in build process
+6. Implement template caching for performance
+7. Create error page templates
+
+# Test Strategy:
+1. Verify Templ templates compile without errors
+2. Test template rendering performance
+3. Validate responsive design on different screen sizes
+4. Test component library elements for accessibility
+5. Verify template caching improves performance
+6. Test error page rendering

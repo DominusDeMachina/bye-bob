@@ -1,0 +1,29 @@
+# Task ID: 13
+# Title: Employee Portal Dashboard
+# Status: pending
+# Dependencies: 10, 11
+# Priority: medium
+# Description: Create the employee portal dashboard with personalized overview of goals, assessments, and company announcements.
+# Details:
+1. Design dashboard layout with key information
+2. Implement goal progress widgets
+3. Create assessment status indicators
+4. Add company announcement system
+5. Implement notification center
+6. Create quick action buttons for common tasks
+7. Add recent activity feed
+8. Implement personalized reminders
+9. Create performance summary
+10. Add manager feedback display
+11. Implement mobile-responsive dashboard
+12. Create customization options for layout
+
+# Test Strategy:
+1. Test dashboard with various user scenarios
+2. Verify goal progress widgets show accurate data
+3. Test assessment status indicators
+4. Validate announcement system displays correctly
+5. Test notification center functionality
+6. Verify quick actions work as expected
+7. Test activity feed accuracy
+8. Validate mobile responsiveness

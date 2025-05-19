@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: byebob-app
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    environment:
+      - PORT=3000
+      - GO_ENV=development
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=byebob
+      - DB_SSLMODE=disable
+    depends_on:
+      - postgres
+    networks:
+      - byebob-network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: byebob-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=byebob
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - byebob-network
+
+  adminer:
+    image: adminer
+    container_name: byebob-adminer
+    restart: unless-stopped
+    ports:
+      - '8080:8080'
+    depends_on:
+      - postgres
+    networks:
+      - byebob-network
+
+networks:
+  byebob-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+    driver: local

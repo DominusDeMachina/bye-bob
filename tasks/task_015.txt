@@ -1,0 +1,29 @@
+# Task ID: 15
+# Title: Real-time Notification System
+# Status: pending
+# Dependencies: 5
+# Priority: medium
+# Description: Implement a real-time notification system using Server-Sent Events (SSE) for updates on goals, assessments, and messages.
+# Details:
+1. Design notification data structure
+2. Implement SSE endpoint for real-time updates
+3. Create notification service for generating events
+4. Add notification storage in database
+5. Implement notification UI components
+6. Create notification preferences
+7. Add read/unread status tracking
+8. Implement notification grouping
+9. Create email fallback for important notifications
+10. Add notification history view
+11. Implement notification actions
+12. Create notification testing tools
+
+# Test Strategy:
+1. Test SSE connection stability
+2. Verify notifications appear in real-time
+3. Test notification persistence in database
+4. Validate read/unread status tracking
+5. Test notification preferences affect delivery
+6. Verify email fallback works correctly
+7. Test notification history view
+8. Validate notification actions work as expected

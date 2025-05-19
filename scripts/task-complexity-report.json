@@ -1,0 +1,211 @@
+{
+  "meta": {
+    "generatedAt": "2025-05-19T19:56:17.112Z",
+    "tasksAnalyzed": 25,
+    "thresholdScore": 5,
+    "projectName": "Taskmaster",
+    "usedResearch": true
+  },
+  "complexityAnalysis": [
+    {
+      "taskId": 1,
+      "taskTitle": "Project Setup and Infrastructure Configuration",
+      "complexityScore": 6,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Break down each infrastructure component (module setup, dependency installation, directory structure, configuration, hot-reloading, Docker, Makefile) into individual subtasks with clear acceptance criteria.",
+      "reasoning": "This task involves multiple technical domains (Go, Fiber, Docker, Makefile, environment variables) and requires careful coordination. Each component can be independently validated, making it suitable for granular subtasks."
+    },
+    {
+      "taskId": 2,
+      "taskTitle": "Database Schema Design and Migration System",
+      "complexityScore": 8,
+      "recommendedSubtasks": 7,
+      "expansionPrompt": "Split into subtasks for Supabase setup, migration tooling, schema design, constraints, indexes, RLS, and connection pooling, each with validation steps.",
+      "reasoning": "Designing a robust, secure, and performant schema with migrations and RLS is complex and error-prone. Each aspect (schema, migrations, security, performance) should be a separate subtask."
+    },
+    {
+      "taskId": 3,
+      "taskTitle": "Authentication and Authorization System",
+      "complexityScore": 9,
+      "recommendedSubtasks": 11,
+      "expansionPrompt": "Divide into Clerk setup, SDK integration, middleware, session management, role/permission system, secure routes, login/logout, MFA, and integration testing subtasks.",
+      "reasoning": "Authentication and authorization are critical and complex, involving external services, middleware, role management, and security features. Each feature should be a distinct subtask for clarity and testability."
+    },
+    {
+      "taskId": 4,
+      "taskTitle": "Core Template System with Templ",
+      "complexityScore": 7,
+      "recommendedSubtasks": 7,
+      "expansionPrompt": "Break into Templ setup, base layouts, navigation, UI components, build integration, caching, and error templates subtasks.",
+      "reasoning": "Setting up a type-safe templating system with reusable components and caching requires careful planning and testing. Each template and component can be a separate subtask."
+    },
+    {
+      "taskId": 5,
+      "taskTitle": "HTMX Integration and Frontend Setup",
+      "complexityScore": 8,
+      "recommendedSubtasks": 10,
+      "expansionPrompt": "Split into Tailwind setup, HTMX integration, utility functions, core patterns, CSP, validation, search, SSE, theme, and responsive design subtasks.",
+      "reasoning": "Integrating HTMX and Tailwind with dynamic patterns, real-time features, and responsive design is complex. Each integration and UI pattern should be a separate subtask."
+    },
+    {
+      "taskId": 6,
+      "taskTitle": "Employee Management CRUD Operations",
+      "complexityScore": 8,
+      "recommendedSubtasks": 10,
+      "expansionPrompt": "Divide into model, repository, service, handlers, templates, validation, error handling, search, profile view, and soft delete subtasks.",
+      "reasoning": "CRUD operations with validation, error handling, and authorization are foundational but complex. Each operation and supporting feature should be a separate subtask."
+    },
+    {
+      "taskId": 7,
+      "taskTitle": "CSV Import/Export Functionality",
+      "complexityScore": 7,
+      "recommendedSubtasks": 12,
+      "expansionPrompt": "Break into CSV template, parsing, validation, transaction, progress, error reporting, export, background, retry, history, UI, and preview subtasks.",
+      "reasoning": "Bulk data handling with validation, transactions, and user feedback is complex. Each step (parsing, validation, import, export, UI) should be a separate subtask."
+    },
+    {
+      "taskId": 8,
+      "taskTitle": "Position, Department, and Site Management",
+      "complexityScore": 7,
+      "recommendedSubtasks": 12,
+      "expansionPrompt": "Split into models, repositories, services, CRUD handlers, templates, hierarchy, requirements, location, usage, bulk, validation, and relationship subtasks.",
+      "reasoning": "Managing organizational entities with hierarchies and relationships is complex. Each entity and management feature should be a separate subtask."
+    },
+    {
+      "taskId": 9,
+      "taskTitle": "Assessment Template Builder",
+      "complexityScore": 8,
+      "recommendedSubtasks": 12,
+      "expansionPrompt": "Divide into schema, models, repositories, services, builder UI, question types, drag-and-drop, versioning, preview, assignment, duplication, and activation subtasks.",
+      "reasoning": "Dynamic template building with versioning and multiple question types is complex. Each builder feature and supporting function should be a separate subtask."
+    },
+    {
+      "taskId": 10,
+      "taskTitle": "Assessment Workflow Implementation",
+      "complexityScore": 8,
+      "recommendedSubtasks": 12,
+      "expansionPrompt": "Break into scheduling, notifications, self-assessment, manager review, comparison, status, auto-save, completion, history, locking, comments, and reports subtasks.",
+      "reasoning": "Implementing a complete assessment workflow with notifications and reporting is complex. Each workflow step and supporting feature should be a separate subtask."
+    },
+    {
+      "taskId": 11,
+      "taskTitle": "Goal Management System",
+      "complexityScore": 8,
+      "recommendedSubtasks": 12,
+      "expansionPrompt": "Split into models, repositories, services, wizard, measurement types, alignment, progress, check-ins, visualization, filtering, drafts, and approval subtasks.",
+      "reasoning": "Goal management with OKR-style tracking and alignment is complex. Each goal feature and supporting function should be a separate subtask."
+    },
+    {
+      "taskId": 12,
+      "taskTitle": "Manager Team View and Oversight",
+      "complexityScore": 7,
+      "recommendedSubtasks": 12,
+      "expansionPrompt": "Divide into dashboard, direct reports, goal overview, assessment status, progress, metrics, comments, notifications, approval, reporting, visualization, and history subtasks.",
+      "reasoning": "Manager oversight with dashboards, reporting, and team visualization is complex. Each dashboard feature and reporting function should be a separate subtask."
+    },
+    {
+      "taskId": 13,
+      "taskTitle": "Employee Portal Dashboard",
+      "complexityScore": 6,
+      "recommendedSubtasks": 12,
+      "expansionPrompt": "Break into layout, goal widgets, assessment indicators, announcements, notifications, quick actions, activity, reminders, summary, feedback, mobile, and customization subtasks.",
+      "reasoning": "Personalized dashboards with widgets and notifications are moderately complex. Each dashboard component and customization option should be a separate subtask."
+    },
+    {
+      "taskId": 14,
+      "taskTitle": "Profile Management Interface",
+      "complexityScore": 6,
+      "recommendedSubtasks": 12,
+      "expansionPrompt": "Split into profile view, editable fields, picture upload, image processing, privacy, history, skills, documents, contact, completion, export, and verification subtasks.",
+      "reasoning": "Profile management with permissions, uploads, and privacy is moderately complex. Each profile feature and supporting function should be a separate subtask."
+    },
+    {
+      "taskId": 15,
+      "taskTitle": "Real-time Notification System",
+      "complexityScore": 7,
+      "recommendedSubtasks": 12,
+      "expansionPrompt": "Divide into data structure, SSE endpoint, service, storage, UI, preferences, read/unread, grouping, email fallback, history, actions, and testing subtasks.",
+      "reasoning": "Real-time notifications with persistence and user preferences are complex. Each notification feature and integration should be a separate subtask."
+    },
+    {
+      "taskId": 16,
+      "taskTitle": "Organization Chart Visualization",
+      "complexityScore": 6,
+      "recommendedSubtasks": 12,
+      "expansionPrompt": "Break into data structure, recursive query, visual component, navigation, search, filtering, detail, export, mobile, zoom, performance, and accessibility subtasks.",
+      "reasoning": "Interactive org charts with filtering and accessibility are moderately complex. Each visualization and interaction feature should be a separate subtask."
+    },
+    {
+      "taskId": 17,
+      "taskTitle": "Reporting and Analytics Dashboard",
+      "complexityScore": 7,
+      "recommendedSubtasks": 12,
+      "expansionPrompt": "Split into data models, aggregation, charts, builder, templates, export, scheduling, sharing, dashboard, filtering, drill-down, and history subtasks.",
+      "reasoning": "Customizable reporting with analytics and export is complex. Each reporting feature and supporting function should be a separate subtask."
+    },
+    {
+      "taskId": 18,
+      "taskTitle": "Audit Logging and Activity Tracking",
+      "complexityScore": 7,
+      "recommendedSubtasks": 12,
+      "expansionPrompt": "Divide into data structure, service, triggers, middleware, tracking, viewer, search, export, retention, alerts, compliance, and aggregation subtasks.",
+      "reasoning": "Comprehensive audit logging with search and alerts is complex. Each logging feature and supporting function should be a separate subtask."
+    },
+    {
+      "taskId": 19,
+      "taskTitle": "Message Board and Announcements",
+      "complexityScore": 5,
+      "recommendedSubtasks": 12,
+      "expansionPrompt": "Break into data models, repository, service, creation, rich text, targeting, reactions, comments, notifications, scheduling, analytics, and archiving subtasks.",
+      "reasoning": "Message boards with targeting and analytics are moderately complex. Each messaging feature and integration should be a separate subtask."
+    },
+    {
+      "taskId": 20,
+      "taskTitle": "Performance Optimization and Caching",
+      "complexityScore": 8,
+      "recommendedSubtasks": 12,
+      "expansionPrompt": "Split into template caching, query optimization, result caching, pooling, assets, HTTP caching, lazy loading, indexes, profiling, frontend, background, and testing subtasks.",
+      "reasoning": "Performance optimization across the stack is complex and critical. Each optimization technique and supporting function should be a separate subtask."
+    },
+    {
+      "taskId": 21,
+      "taskTitle": "Security Hardening and Vulnerability Testing",
+      "complexityScore": 9,
+      "recommendedSubtasks": 12,
+      "expansionPrompt": "Divide into secure headers, validation, SQL/XSS/CSRF protection, rate limiting, file upload, scanning, disclosure, logging, documentation, and penetration testing subtasks.",
+      "reasoning": "Security hardening and vulnerability testing are critical and complex. Each security feature and testing procedure should be a separate subtask."
+    },
+    {
+      "taskId": 22,
+      "taskTitle": "Comprehensive Testing Suite",
+      "complexityScore": 8,
+      "recommendedSubtasks": 12,
+      "expansionPrompt": "Break into framework setup, unit, integration, database, mocks, end-to-end, performance, security, CI, coverage, documentation, and regression subtasks.",
+      "reasoning": "Comprehensive testing across all layers is complex and essential. Each testing type and supporting function should be a separate subtask."
+    },
+    {
+      "taskId": 23,
+      "taskTitle": "Deployment Pipeline and Infrastructure",
+      "complexityScore": 8,
+      "recommendedSubtasks": 12,
+      "expansionPrompt": "Split into Railway, Docker, CI/CD, environment, migration, blue-green, monitoring, backup, logging, performance, scaling, and recovery subtasks.",
+      "reasoning": "Setting up a robust deployment pipeline with monitoring and recovery is complex. Each deployment and infrastructure feature should be a separate subtask."
+    },
+    {
+      "taskId": 24,
+      "taskTitle": "Documentation and User Guides",
+      "complexityScore": 5,
+      "recommendedSubtasks": 12,
+      "expansionPrompt": "Divide into API docs, code standards, user/admin guides, videos, in-app help, tooltips, onboarding, knowledge base, developer, deployment, and versioning subtasks.",
+      "reasoning": "Comprehensive documentation is moderately complex but essential. Each documentation type and supporting function should be a separate subtask."
+    },
+    {
+      "taskId": 25,
+      "taskTitle": "Load Testing and Performance Validation",
+      "complexityScore": 8,
+      "recommendedSubtasks": 12,
+      "expansionPrompt": "Break into environment setup, scenarios, load/stress/endurance tests, monitoring, bottlenecks, recommendations, database, API, real-time, and validation subtasks.",
+      "reasoning": "Load testing and performance validation are complex and critical for scalability. Each testing scenario and supporting function should be a separate subtask."
+    }
+  ]
+}

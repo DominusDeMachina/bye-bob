@@ -1,0 +1,31 @@
+# Task ID: 2
+# Title: Database Schema Design and Migration System
+# Status: pending
+# Dependencies: 1
+# Priority: high
+# Description: Design and implement the database schema in Supabase (PostgreSQL) and create a migration system for version control of database changes.
+# Details:
+1. Set up Supabase project and configure connection
+2. Implement migration system using golang-migrate or similar tool
+3. Create initial migration files for core tables:
+   - employees (id, first_name, middle_name, last_name, display_name, email, address, position_id, department_id, site_id, manager_id, employment_type, start_date, end_date, status, profile_picture_url)
+   - positions (id, title, description, requirements)
+   - departments (id, name, description, lead_id)
+   - sites (id, name, city, address)
+   - assessment_templates (id, name, description, version, active)
+   - assessments (id, template_id, employee_id, reviewer_id, status, created_at, completed_at)
+   - goals (id, employee_id, title, description, time_frame, type, status, created_at, updated_at)
+   - goal_checkins (id, goal_id, note, progress, created_at)
+   - audit_logs (id, user_id, action, table_name, record_id, changes, created_at)
+4. Set up foreign key relationships and constraints
+5. Implement indexes for performance optimization
+6. Configure Row Level Security (RLS) policies in Supabase
+7. Create database connection pool with pgxpool
+
+# Test Strategy:
+1. Test migration up and down functionality
+2. Verify all tables are created with correct columns and constraints
+3. Test foreign key constraints with sample data
+4. Validate indexes improve query performance
+5. Test RLS policies with different user roles
+6. Benchmark connection pool performance under load
