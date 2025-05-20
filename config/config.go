@@ -24,6 +24,12 @@ type Config struct {
 	DBPassword string
 	DBName     string
 	DBSSLMode  string
+	
+	// Supabase config
+	SupabaseURL     string
+	SupabaseAPIKey  string
+	SupabaseAnon    string
+	SupabaseService string
 
 	// Clerk auth config
 	ClerkSecretKey string
@@ -44,11 +50,15 @@ func NewConfig() (*Config, error) {
 		envFile = fmt.Sprintf(".env.%s", env)
 	}
 
-	// Try to load .env file, but don't error if it doesn't exist
-	_ = godotenv.Load(envFile)
+	// Load .env file if it exists
+	if _, err := os.Stat(envFile); err == nil {
+		if err := godotenv.Load(envFile); err != nil {
+			return nil, fmt.Errorf("error loading %s file: %w", envFile, err)
+		}
+	}
 
-	// Create config from environment variables
-	config := &Config{
+	// Create config
+	cfg := &Config{
 		// Server config
 		Port:          getEnv("PORT", "3000"),
 		Environment:   env,
@@ -58,22 +68,108 @@ func NewConfig() (*Config, error) {
 		DBHost:     getEnv("DB_HOST", "localhost"),
 		DBPort:     getEnv("DB_PORT", "5432"),
 		DBUser:     getEnv("DB_USER", "postgres"),
-		DBPassword: getEnv("DB_PASSWORD", ""),
+		DBPassword: getEnv("DB_PASSWORD", "postgres"),
 		DBName:     getEnv("DB_NAME", "byebob"),
 		DBSSLMode:  getEnv("DB_SSLMODE", "disable"),
+		
+		// Supabase config
+		SupabaseURL:     getEnv("SUPABASE_URL", ""),
+		SupabaseAPIKey:  getEnv("SUPABASE_API_KEY", ""),
+		SupabaseAnon:    getEnv("SUPABASE_ANON_KEY", ""),
+		SupabaseService: getEnv("SUPABASE_SERVICE_KEY", ""),
 
 		// Clerk auth config
 		ClerkSecretKey: getEnv("CLERK_SECRET_KEY", ""),
 		ClerkPubKey:    getEnv("CLERK_PUB_KEY", ""),
 	}
 
-	return config, nil
+	return cfg, nil
 }
 
-// GetDSN returns the PostgreSQL connection string
-func (c *Config) GetDSN() string {
-	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
-		c.DBHost, c.DBPort, c.DBUser, c.DBPassword, c.DBName, c.DBSSLMode)
+// PostgresConnectionString returns the PostgreSQL connection string
+func (c *Config) PostgresConnectionString() string {
+	// If Supabase URL is provided, use it
+	if c.SupabaseURL != "" && c.SupabaseService != "" {
+		// Extract host and port from Supabase URL
+		// Supabase URL format: https://<project-id>.supabase.co
+		url := strings.TrimPrefix(c.SupabaseURL, "https://")
+		url = strings.TrimSuffix(url, "/")
+		
+		// For direct database access, use the db.<project-id>.supabase.co hostname
+		if strings.Contains(url, ".supabase.co") {
+			parts := strings.Split(url, ".")
+			if len(parts) > 0 {
+				projectID := parts[0]
+				dbHost := fmt.Sprintf("db.%s.supabase.co", projectID)
+				return fmt.Sprintf("postgres://%s:%s@%s:5432/%s?sslmode=require", 
+					"postgres", c.SupabaseService, dbHost, "postgres")
+			}
+		}
+	}
+	
+	// Fallback to regular PostgreSQL connection
+	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s",
+		c.DBUser, c.DBPassword, c.DBHost, c.DBPort, c.DBName, c.DBSSLMode)
+}
+
+// SupabaseRESTURL returns the Supabase REST API URL
+func (c *Config) SupabaseRESTURL() string {
+	if c.SupabaseURL == "" {
+		return ""
+	}
+	return fmt.Sprintf("%s/rest/v1", strings.TrimSuffix(c.SupabaseURL, "/"))
+}
+
+// Helper functions for retrieving environment variables
+func getEnv(key, defaultValue string) string {
+	value := os.Getenv(key)
+	if value == "" {
+		return defaultValue
+	}
+	return value
+}
+
+func getEnvAsInt(key string, defaultValue int) int {
+	valueStr := getEnv(key, "")
+	if value, err := strconv.Atoi(valueStr); err == nil {
+		return value
+	}
+	return defaultValue
+}
+
+func getEnvAsBool(key string, defaultValue bool) bool {
+	valueStr := getEnv(key, "")
+	if value, err := strconv.ParseBool(valueStr); err == nil {
+		return value
+	}
+	return defaultValue
+}
+
+// GetProjectRoot returns the absolute path to the project root
+func GetProjectRoot() (string, error) {
+	// Try to find the project root by looking for a .git directory or go.mod file
+	dir, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+
+	for {
+		if _, err := os.Stat(filepath.Join(dir, ".git")); err == nil {
+			return dir, nil
+		}
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir, nil
+		}
+
+		parentDir := filepath.Dir(dir)
+		if parentDir == dir {
+			break
+		}
+		dir = parentDir
+	}
+
+	// If we can't find a project root, just return the current directory
+	return os.Getwd()
 }
 
 // IsDevelopment returns true if in development environment
@@ -84,64 +180,4 @@ func (c *Config) IsDevelopment() bool {
 // IsProduction returns true if in production environment
 func (c *Config) IsProduction() bool {
 	return c.Environment == "production"
-}
-
-// getEnv gets an environment variable or returns a default value
-func getEnv(key, defaultValue string) string {
-	value := os.Getenv(key)
-	if value == "" {
-		return defaultValue
-	}
-	return value
-}
-
-// getEnvInt gets an environment variable as int or returns a default value
-func getEnvInt(key string, defaultValue int) int {
-	valueStr := os.Getenv(key)
-	if valueStr == "" {
-		return defaultValue
-	}
-	value, err := strconv.Atoi(valueStr)
-	if err != nil {
-		return defaultValue
-	}
-	return value
-}
-
-// getEnvBool gets an environment variable as bool or returns a default value
-func getEnvBool(key string, defaultValue bool) bool {
-	valueStr := os.Getenv(key)
-	if valueStr == "" {
-		return defaultValue
-	}
-	value, err := strconv.ParseBool(valueStr)
-	if err != nil {
-		return defaultValue
-	}
-	return value
-}
-
-// GetRootDir returns the absolute path to the project root directory
-func GetRootDir() (string, error) {
-	cwd, err := os.Getwd()
-	if err != nil {
-		return "", err
-	}
-	
-	// Traverse up until we find go.mod
-	dir := cwd
-	for {
-		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
-			return dir, nil
-		}
-		
-		parentDir := filepath.Dir(dir)
-		if parentDir == dir {
-			// We've reached the filesystem root without finding go.mod
-			break
-		}
-		dir = parentDir
-	}
-	
-	return cwd, nil
 } 

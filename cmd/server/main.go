@@ -9,6 +9,7 @@ import (
 
 	"github.com/gfurduy/byebob/config"
 	"github.com/gfurduy/byebob/internal/handlers"
+	"github.com/gfurduy/byebob/internal/repository"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -30,7 +31,17 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to load config: %v", err)
 	}
-
+	
+	// Initialize database connection pool
+	db, err := repository.NewDBPool(cfg)
+	if err != nil {
+		log.Fatalf("Failed to connect to database: %v", err)
+	}
+	defer db.Close()
+	
+	// Initialize repository
+	repo := repository.NewPostgresRepository(db.GetPool())
+	
 	// Create a new Fiber app
 	app := fiber.New(fiber.Config{
 		AppName:      "ByeBob App",
@@ -52,7 +63,7 @@ func main() {
 	app.Static("/static", "./static")
 
 	// Setup routes
-	handlers.SetupRoutes(app)
+	handlers.SetupRoutes(app, repo)
 
 	// Start the server in a goroutine
 	go func() {

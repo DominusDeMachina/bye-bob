@@ -2,12 +2,28 @@ package handlers
 
 import (
 	"github.com/gfurduy/byebob/config"
+	"github.com/gfurduy/byebob/internal/repository"
 	"github.com/gfurduy/byebob/internal/templates"
 	"github.com/gofiber/fiber/v2"
 )
 
+// Handler manages the application's HTTP handlers
+type Handler struct {
+	repo repository.Repository
+}
+
+// NewHandler creates a new handler with the given repository
+func NewHandler(repo repository.Repository) *Handler {
+	return &Handler{
+		repo: repo,
+	}
+}
+
 // SetupRoutes configures all application routes
-func SetupRoutes(app *fiber.App) {
+func SetupRoutes(app *fiber.App, repo repository.Repository) {
+	// Create a handler with the repository
+	h := NewHandler(repo)
+
 	// Web routes (HTML)
 	app.Get("/", HomeHandler)
 
@@ -20,8 +36,8 @@ func SetupRoutes(app *fiber.App) {
 
 	// Employee routes
 	employees := v1.Group("/employees")
-	employees.Get("/", GetEmployees)
-	employees.Get("/:id", GetEmployee)
+	employees.Get("/", h.GetEmployees)
+	employees.Get("/:id", h.GetEmployee)
 	// Add more employee routes as needed
 }
 
@@ -42,18 +58,33 @@ func HealthCheck(c *fiber.Ctx) error {
 }
 
 // GetEmployees returns a list of employees
-func GetEmployees(c *fiber.Ctx) error {
-	// This would normally fetch from the database
+func (h *Handler) GetEmployees(c *fiber.Ctx) error {
+	employees, err := h.repo.GetEmployees(c.Context())
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error":   true,
+			"message": "Error fetching employees",
+		})
+	}
+	
 	return c.JSON(fiber.Map{
-		"message": "This endpoint will return a list of employees",
+		"data": employees,
 	})
 }
 
 // GetEmployee returns a single employee by ID
-func GetEmployee(c *fiber.Ctx) error {
+func (h *Handler) GetEmployee(c *fiber.Ctx) error {
 	id := c.Params("id")
-	// This would normally fetch from the database
+	
+	employee, err := h.repo.GetEmployeeByID(c.Context(), id)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error":   true,
+			"message": "Error fetching employee",
+		})
+	}
+	
 	return c.JSON(fiber.Map{
-		"message": "This endpoint will return an employee with ID: " + id,
+		"data": employee,
 	})
 } 

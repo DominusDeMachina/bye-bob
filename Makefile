@@ -94,4 +94,114 @@ templ: ## Generate Templ templates
 deps: ## Install dependencies
 	@echo "Installing dependencies..."
 	@go mod download
-	@go install github.com/a-h/templ/cmd/templ@latest 
+	@go install github.com/a-h/templ/cmd/templ@latest
+	@go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+
+# Test database connection
+test-db: ## Test database connection
+	@echo "Testing database connection..."
+	@go run ./scripts/test_supabase_connection.go
+	
+# Test Supabase connection specifically
+test-supabase: ## Test Supabase connection
+	@echo "Testing Supabase connection (make sure your Supabase credentials are set)..."
+	@mkdir -p tmp
+	@echo 'package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"os"
+	"strings"
+	"time"
+
+	"github.com/gfurduy/byebob/config"
+	"github.com/gfurduy/byebob/internal/database"
+)
+
+func main() {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+	log.Println("Starting Supabase connection test...")
+
+	cfg, err := config.NewConfig()
+	if err != nil {
+		log.Fatalf("Failed to load configuration: %v", err)
+	}
+
+	if cfg.SupabaseURL == "" || cfg.SupabaseService == "" {
+		log.Fatalf("Error: Supabase URL and Service Key must be configured in the environment variables.\n" +
+			"Please ensure you have set the following in your .env file:\n" +
+			"SUPABASE_URL=https://your-project-id.supabase.co\n" +
+			"SUPABASE_SERVICE_KEY=your-service-role-key")
+	}
+
+	fmt.Println("Supabase Connection Settings:")
+	fmt.Printf("- Supabase URL: %s\n", cfg.SupabaseURL)
+	
+	projectID := ""
+	parts := strings.Split(cfg.SupabaseURL, ".")
+	if len(parts) >= 2 {
+		hostPart := parts[0]
+		projectID = strings.TrimPrefix(hostPart, "https://")
+		fmt.Printf("- Project ID: %s\n", projectID)
+	}
+	
+	fmt.Println("\nAttempting to connect to Supabase PostgreSQL...")
+	db, err := database.Initialize(cfg)
+	if err != nil {
+		log.Fatalf("Failed to connect to Supabase: %v", err)
+	}
+	defer db.Close()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	var version string
+	err = db.Pool.QueryRow(ctx, "SELECT version()").Scan(&version)
+	if err != nil {
+		log.Fatalf("Query failed: %v", err)
+	}
+
+	fmt.Println("\n✅ Connection successful!")
+	fmt.Printf("PostgreSQL version: %s\n", version)
+	fmt.Println("\nTest completed successfully.")
+}' > tmp/supabase_test.go
+	@cd tmp && go run supabase_test.go
+	@rm -f tmp/supabase_test.go
+
+# Setup database migrations directory
+setup-migrations: ## Setup migrations directory structure
+	@echo "Setting up migrations directory..."
+	@mkdir -p migrations/postgres
+	@echo "Created migrations/postgres directory for database migrations"
+
+# Create a new migration
+migrate-create: ## Create a new migration (usage: make migrate-create name=migration_name)
+	@if [ -z "$(name)" ]; then \
+		echo "Error: Migration name is required. Usage: make migrate-create name=migration_name"; \
+		exit 1; \
+	fi
+	@echo "Creating migration: $(name)..."
+	@migrate create -ext sql -dir migrations/postgres -seq $(name)
+	@echo "Created migration files in migrations/postgres"
+
+# Run migrations up
+migrate-up: ## Run all pending migrations
+	@echo "Running migrations up..."
+	@if [ -z "$(POSTGRESQL_URL)" ]; then \
+		echo "Error: POSTGRESQL_URL environment variable is required"; \
+		exit 1; \
+	fi
+	@migrate -path migrations/postgres -database "$(POSTGRESQL_URL)" up
+	@echo "Migrations applied successfully"
+
+# Roll back last migration
+migrate-down: ## Roll back the last migration
+	@echo "Rolling back the last migration..."
+	@if [ -z "$(POSTGRESQL_URL)" ]; then \
+		echo "Error: POSTGRESQL_URL environment variable is required"; \
+		exit 1; \
+	fi
+	@migrate -path migrations/postgres -database "$(POSTGRESQL_URL)" down 1
+	@echo "Last migration rolled back"

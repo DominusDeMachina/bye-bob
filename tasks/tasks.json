@@ -100,15 +100,102 @@
     {
       "id": 2,
       "title": "Database Schema Design and Migration System",
-      "description": "Design and implement the database schema in Supabase (PostgreSQL) and create a migration system for version control of database changes.",
-      "details": "1. Set up Supabase project and configure connection\n2. Implement migration system using golang-migrate or similar tool\n3. Create initial migration files for core tables:\n   - employees (id, first_name, middle_name, last_name, display_name, email, address, position_id, department_id, site_id, manager_id, employment_type, start_date, end_date, status, profile_picture_url)\n   - positions (id, title, description, requirements)\n   - departments (id, name, description, lead_id)\n   - sites (id, name, city, address)\n   - assessment_templates (id, name, description, version, active)\n   - assessments (id, template_id, employee_id, reviewer_id, status, created_at, completed_at)\n   - goals (id, employee_id, title, description, time_frame, type, status, created_at, updated_at)\n   - goal_checkins (id, goal_id, note, progress, created_at)\n   - audit_logs (id, user_id, action, table_name, record_id, changes, created_at)\n4. Set up foreign key relationships and constraints\n5. Implement indexes for performance optimization\n6. Configure Row Level Security (RLS) policies in Supabase\n7. Create database connection pool with pgxpool",
-      "testStrategy": "1. Test migration up and down functionality\n2. Verify all tables are created with correct columns and constraints\n3. Test foreign key constraints with sample data\n4. Validate indexes improve query performance\n5. Test RLS policies with different user roles\n6. Benchmark connection pool performance under load",
-      "priority": "high",
+      "description": "Design and implement a robust, version-controlled database schema in Supabase (PostgreSQL) using modern Go practices. The solution should leverage golang-migrate for managing schema migrations, ensure best practices for schema evolution, and support maintainable, scalable development workflows.\n\nKey requirements:\n- Set up a Supabase project and configure PostgreSQL connection\n- Use golang-migrate to manage migration files and apply schema changes, enabling version control and repeatable deployments[5][2]\n- Design the schema with clear table definitions, relationships, and constraints for core entities:\n  - employees (id, first_name, middle_name, last_name, display_name, email, address, position_id, department_id, site_id, manager_id, employment_type, start_date, end_date, status, profile_picture_url)\n  - positions (id, title, description, requirements)\n  - departments (id, name, description, lead_id)\n  - sites (id, name, city, address)\n  - assessment_templates (id, name, description, version, active)\n  - assessments (id, template_id, employee_id, reviewer_id, status, created_at, completed_at)\n  - goals (id, employee_id, title, description, time_frame, type, status, created_at, updated_at)\n  - goal_checkins (id, goal_id, note, progress, created_at)\n  - audit_logs (id, user_id, action, table_name, record_id, changes, created_at)\n- Establish foreign key relationships, constraints, and indexes for data integrity and performance\n- Configure Row Level Security (RLS) policies in Supabase for granular access control\n- Implement a PostgreSQL connection pool using pgxpool for efficient resource management\n- Apply the repository pattern in Go to abstract database access, promote testability, and support clean architecture\n- Document schema changes and migration processes for team collaboration\n\nThe implementation should follow modern Go conventions for database access, migration management, and schema design, ensuring maintainability and scalability for future development[5][2].",
+      "status": "in-progress",
       "dependencies": [
         1
       ],
-      "status": "pending",
-      "subtasks": []
+      "priority": "high",
+      "details": "1. Set up Supabase project and configure PostgreSQL connection\n2. Implement migration system using golang-migrate, ensuring all schema changes are tracked and versioned[5][2]\n3. Create initial migration files for core tables as specified\n4. Define foreign key relationships and constraints for data integrity\n5. Implement indexes on frequently queried columns for performance optimization\n6. Configure Row Level Security (RLS) policies in Supabase for secure access control\n7. Set up a PostgreSQL connection pool using pgxpool for efficient database connections\n8. Implement the repository pattern in Go to abstract and organize database operations, supporting maintainable and testable code\n9. Document migration and schema management processes for developer onboarding and collaboration",
+      "testStrategy": "1. Test migration up and down functionality using golang-migrate\n2. Verify all tables are created with correct columns, relationships, and constraints\n3. Test foreign key constraints and cascading actions with sample data\n4. Validate that indexes improve query performance on key operations\n5. Test RLS policies with different user roles to ensure correct access control\n6. Benchmark connection pool performance under simulated load\n7. Unit test repository layer methods for CRUD operations and error handling",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Set up Supabase project and PostgreSQL connection",
+          "description": "Create a Supabase project and configure PostgreSQL connection settings for the application",
+          "details": "1. Create a new Supabase project using the Supabase Dashboard\n2. Configure PostgreSQL connection settings in the application\n3. Set up environment variables for database credentials\n4. Test the connection to ensure it works correctly\n5. Document the setup process for team members\n<info added on 2025-05-19T20:44:08.716Z>\n1. Create a new Supabase project using the Supabase Dashboard\n2. Configure PostgreSQL connection settings in the application\n3. Set up environment variables for database credentials\n4. Test the connection to ensure it works correctly\n5. Document the setup process for team members\n\nImplementation details:\n- Created a database connection package with pgxpool integration in internal/database/db.go\n- Implemented connection pooling with appropriate settings for optimal performance\n- Added connection retry and health check functionality to ensure database reliability\n- Created comprehensive documentation:\n  - Supabase setup guide in docs/supabase_setup.md\n  - Database setup instructions in docs/database_setup.md\n- Set up migration system infrastructure with golang-migrate (preparing for next subtask)\n- Added Makefile targets for common database operations\n- Created scripts:\n  - Migration initialization script (scripts/setup_migrations.sh)\n  - Test script to verify Supabase/PostgreSQL connection\n- Established repository pattern:\n  - Defined repository interfaces in internal/repository/interfaces.go\n  - Implemented clean separation of concerns for database operations\n\nThe implementation follows best practices for PostgreSQL connection management with proper error handling and connection pooling strategies.\n</info added on 2025-05-19T20:44:08.716Z>",
+          "status": "done",
+          "dependencies": [],
+          "parentTaskId": 2
+        },
+        {
+          "id": 2,
+          "title": "Implement migration system with golang-migrate",
+          "description": "Set up golang-migrate to manage database schema migrations in a version-controlled way",
+          "details": "1. Install golang-migrate CLI tool\n2. Create a migrations directory structure\n3. Set up migration commands in the Makefile\n4. Configure the migration system to work with PostgreSQL\n5. Create basic migration templates\n6. Document the migration workflow for the team",
+          "status": "pending",
+          "dependencies": [
+            1
+          ],
+          "parentTaskId": 2
+        },
+        {
+          "id": 3,
+          "title": "Design and create core entity tables",
+          "description": "Design and implement the core entity tables including employees, positions, departments, and sites",
+          "details": "1. Create migration files for employee-related entities:\n   - employees (id, first_name, middle_name, last_name, display_name, email, address, position_id, department_id, site_id, manager_id, employment_type, start_date, end_date, status, profile_picture_url)\n   - positions (id, title, description, requirements)\n   - departments (id, name, description, lead_id)\n   - sites (id, name, city, address)\n2. Define appropriate data types and constraints\n3. Add foreign key relationships between tables\n4. Create indexes for frequently queried columns\n5. Run and test the migrations\n6. Document the schema design",
+          "status": "pending",
+          "dependencies": [
+            2
+          ],
+          "parentTaskId": 2
+        },
+        {
+          "id": 4,
+          "title": "Create assessment and goal-related tables",
+          "description": "Design and implement the assessment and goal-related tables for performance management",
+          "details": "1. Create migration files for assessment and goal-related entities:\n   - assessment_templates (id, name, description, version, active)\n   - assessments (id, template_id, employee_id, reviewer_id, status, created_at, completed_at)\n   - goals (id, employee_id, title, description, time_frame, type, status, created_at, updated_at)\n   - goal_checkins (id, goal_id, note, progress, created_at)\n2. Define appropriate data types and constraints\n3. Add foreign key relationships to employees and other tables\n4. Create indexes for frequently queried columns\n5. Run and test the migrations\n6. Document the schema design",
+          "status": "pending",
+          "dependencies": [
+            3
+          ],
+          "parentTaskId": 2
+        },
+        {
+          "id": 5,
+          "title": "Set up audit logging and system tables",
+          "description": "Implement audit logging and system utility tables for tracking changes",
+          "details": "1. Create migration files for audit and system tables:\n   - audit_logs (id, user_id, action, table_name, record_id, changes, created_at)\n   - Create any additional system tables needed for application functionality\n2. Set up triggers or hooks for automatically logging changes\n3. Define appropriate data types and constraints\n4. Create indexes for audit table queries\n5. Run and test the migrations\n6. Document the audit logging system",
+          "status": "pending",
+          "dependencies": [
+            4
+          ],
+          "parentTaskId": 2
+        },
+        {
+          "id": 6,
+          "title": "Configure Row Level Security policies",
+          "description": "Set up Row Level Security (RLS) policies in Supabase for granular access control",
+          "details": "1. Design RLS policies for each table based on user roles and permissions\n2. Implement RLS policies in Supabase for:\n   - Employees (managers can see their team members)\n   - Departments (department heads can manage their departments)\n   - Assessments (reviewers can see assessments they're assigned to)\n   - Goals (employees can see their own goals, managers can see their team's goals)\n3. Test the RLS policies with different user roles\n4. Document all RLS policies for future reference",
+          "status": "pending",
+          "dependencies": [
+            5
+          ],
+          "parentTaskId": 2
+        },
+        {
+          "id": 7,
+          "title": "Implement database connection pool",
+          "description": "Set up a PostgreSQL connection pool using pgxpool for efficient database connections",
+          "details": "1. Configure a PostgreSQL connection pool using pgxpool\n2. Set up appropriate connection pool parameters (max connections, idle timeout, etc.)\n3. Create a shared database package that exposes the connection pool\n4. Implement connection retry logic and error handling\n5. Add health checks for database connections\n6. Document the connection pool configuration for the team",
+          "status": "pending",
+          "dependencies": [
+            6
+          ],
+          "parentTaskId": 2
+        },
+        {
+          "id": 8,
+          "title": "Create repository layer for data access",
+          "description": "Implement the repository pattern in Go to abstract and organize database operations",
+          "details": "1. Design repository interfaces for each domain entity (Employee, Department, Position, etc.)\n2. Implement PostgreSQL-specific repository implementations using pgx\n3. Create CRUD operations for each entity\n4. Add query methods for common access patterns\n5. Implement transaction support for multi-table operations\n6. Add proper error handling and logging\n7. Write unit tests for repository methods\n8. Document the repository pattern implementation",
+          "status": "pending",
+          "dependencies": [
+            7
+          ],
+          "parentTaskId": 2
+        }
+      ]
     },
     {
       "id": 3,
