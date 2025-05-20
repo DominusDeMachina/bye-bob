@@ -100,75 +100,17 @@ deps: ## Install dependencies
 # Test database connection
 test-db: ## Test database connection
 	@echo "Testing database connection..."
-	@go run ./scripts/test_supabase_connection.go
+	@go run ./scripts/cmd/test_db
 	
-# Test Supabase connection specifically
-test-supabase: ## Test Supabase connection
-	@echo "Testing Supabase connection (make sure your Supabase credentials are set)..."
-	@mkdir -p tmp
-	@echo 'package main
-
-import (
-	"context"
-	"fmt"
-	"log"
-	"os"
-	"strings"
-	"time"
-
-	"github.com/gfurduy/byebob/config"
-	"github.com/gfurduy/byebob/internal/database"
-)
-
-func main() {
-	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	log.Println("Starting Supabase connection test...")
-
-	cfg, err := config.NewConfig()
-	if err != nil {
-		log.Fatalf("Failed to load configuration: %v", err)
-	}
-
-	if cfg.SupabaseURL == "" || cfg.SupabaseService == "" {
-		log.Fatalf("Error: Supabase URL and Service Key must be configured in the environment variables.\n" +
-			"Please ensure you have set the following in your .env file:\n" +
-			"SUPABASE_URL=https://your-project-id.supabase.co\n" +
-			"SUPABASE_SERVICE_KEY=your-service-role-key")
-	}
-
-	fmt.Println("Supabase Connection Settings:")
-	fmt.Printf("- Supabase URL: %s\n", cfg.SupabaseURL)
+# Test Railway connection specifically
+test-railway: ## Test Railway connection
+	@echo "Testing Railway connection (make sure your Railway credentials are set)..."
+	@go run ./scripts/cmd/test_railway
 	
-	projectID := ""
-	parts := strings.Split(cfg.SupabaseURL, ".")
-	if len(parts) >= 2 {
-		hostPart := parts[0]
-		projectID = strings.TrimPrefix(hostPart, "https://")
-		fmt.Printf("- Project ID: %s\n", projectID)
-	}
-	
-	fmt.Println("\nAttempting to connect to Supabase PostgreSQL...")
-	db, err := database.Initialize(cfg)
-	if err != nil {
-		log.Fatalf("Failed to connect to Supabase: %v", err)
-	}
-	defer db.Close()
-
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	var version string
-	err = db.Pool.QueryRow(ctx, "SELECT version()").Scan(&version)
-	if err != nil {
-		log.Fatalf("Query failed: %v", err)
-	}
-
-	fmt.Println("\n✅ Connection successful!")
-	fmt.Printf("PostgreSQL version: %s\n", version)
-	fmt.Println("\nTest completed successfully.")
-}' > tmp/supabase_test.go
-	@cd tmp && go run supabase_test.go
-	@rm -f tmp/supabase_test.go
+# Test local database connection
+test-local: ## Test local database connection
+	@echo "Testing local database connection..."
+	@go run ./scripts/cmd/test_local
 
 # Setup database migrations directory
 setup-migrations: ## Setup migrations directory structure
@@ -205,3 +147,23 @@ migrate-down: ## Roll back the last migration
 	fi
 	@migrate -path migrations/postgres -database "$(POSTGRESQL_URL)" down 1
 	@echo "Last migration rolled back"
+
+# Set up database security configuration
+db-security-config: ## Set up database security configuration (roles, permissions, RLS)
+	@echo "Applying database security configuration..."
+	@if [ -z "$(POSTGRESQL_URL)" ]; then \
+		echo "Error: POSTGRESQL_URL environment variable is required"; \
+		exit 1; \
+	fi
+	@migrate -path migrations/postgres -database "$(POSTGRESQL_URL)" up 4
+	@echo "Security configuration applied successfully!"
+	@echo "IMPORTANT: Update database user passwords for your environment using scripts/db/update_db_passwords.sh"
+
+# Update database user passwords
+db-update-passwords: ## Update database user passwords (usage: make db-update-passwords env=dev|staging|prod)
+	@if [ -z "$(env)" ]; then \
+		echo "Error: Environment is required. Usage: make db-update-passwords env=dev|staging|prod"; \
+		exit 1; \
+	fi
+	@echo "Updating database passwords for $(env) environment..."
+	@scripts/db/update_db_passwords.sh $(env)

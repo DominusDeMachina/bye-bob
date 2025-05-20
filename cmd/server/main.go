@@ -32,12 +32,12 @@ func main() {
 		log.Fatalf("Failed to load config: %v", err)
 	}
 	
-	// Initialize database connection pool
-	db, err := repository.NewDBPool(cfg)
+	// Initialize global database connection pool
+	db, err := repository.InitGlobalDBPool(cfg)
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
-	defer db.Close()
+	defer repository.CloseGlobalDBPool()
 	
 	// Initialize repository
 	repo := repository.NewPostgresRepository(db.GetPool())

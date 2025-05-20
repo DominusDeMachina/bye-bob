@@ -25,11 +25,8 @@ type Config struct {
 	DBName     string
 	DBSSLMode  string
 	
-	// Supabase config
-	SupabaseURL     string
-	SupabaseAPIKey  string
-	SupabaseAnon    string
-	SupabaseService string
+	// Railway config
+	RailwayDBURL string
 
 	// Clerk auth config
 	ClerkSecretKey string
@@ -72,11 +69,8 @@ func NewConfig() (*Config, error) {
 		DBName:     getEnv("DB_NAME", "byebob"),
 		DBSSLMode:  getEnv("DB_SSLMODE", "disable"),
 		
-		// Supabase config
-		SupabaseURL:     getEnv("SUPABASE_URL", ""),
-		SupabaseAPIKey:  getEnv("SUPABASE_API_KEY", ""),
-		SupabaseAnon:    getEnv("SUPABASE_ANON_KEY", ""),
-		SupabaseService: getEnv("SUPABASE_SERVICE_KEY", ""),
+		// Railway config
+		RailwayDBURL: getEnv("RAILWAY_DB_URL", ""),
 
 		// Clerk auth config
 		ClerkSecretKey: getEnv("CLERK_SECRET_KEY", ""),
@@ -88,36 +82,14 @@ func NewConfig() (*Config, error) {
 
 // PostgresConnectionString returns the PostgreSQL connection string
 func (c *Config) PostgresConnectionString() string {
-	// If Supabase URL is provided, use it
-	if c.SupabaseURL != "" && c.SupabaseService != "" {
-		// Extract host and port from Supabase URL
-		// Supabase URL format: https://<project-id>.supabase.co
-		url := strings.TrimPrefix(c.SupabaseURL, "https://")
-		url = strings.TrimSuffix(url, "/")
-		
-		// For direct database access, use the db.<project-id>.supabase.co hostname
-		if strings.Contains(url, ".supabase.co") {
-			parts := strings.Split(url, ".")
-			if len(parts) > 0 {
-				projectID := parts[0]
-				dbHost := fmt.Sprintf("db.%s.supabase.co", projectID)
-				return fmt.Sprintf("postgres://%s:%s@%s:5432/%s?sslmode=require", 
-					"postgres", c.SupabaseService, dbHost, "postgres")
-			}
-		}
+	// If Railway DB URL is provided, use it
+	if c.RailwayDBURL != "" {
+		return c.RailwayDBURL
 	}
 	
 	// Fallback to regular PostgreSQL connection
 	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s",
 		c.DBUser, c.DBPassword, c.DBHost, c.DBPort, c.DBName, c.DBSSLMode)
-}
-
-// SupabaseRESTURL returns the Supabase REST API URL
-func (c *Config) SupabaseRESTURL() string {
-	if c.SupabaseURL == "" {
-		return ""
-	}
-	return fmt.Sprintf("%s/rest/v1", strings.TrimSuffix(c.SupabaseURL, "/"))
 }
 
 // Helper functions for retrieving environment variables

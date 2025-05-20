@@ -1,10 +1,10 @@
 # Database Setup Guide
 
-This document provides instructions for setting up the PostgreSQL database with Supabase and managing migrations for the ByeBob application.
+This document provides instructions for setting up the PostgreSQL database with Railway and managing migrations for the ByeBob application.
 
-## Supabase Setup
+## Railway Setup
 
-For detailed Supabase setup instructions, see [Supabase Setup Guide](supabase_setup.md).
+For detailed Railway setup instructions, see [Railway Setup Guide](railway_setup.md).
 
 ## Environment Configuration
 
@@ -23,11 +23,8 @@ For detailed Supabase setup instructions, see [Supabase Setup Guide](supabase_se
    DB_NAME=byebob
    DB_SSLMODE=disable
    
-   # Supabase
-   SUPABASE_URL=https://your-project-id.supabase.co
-   SUPABASE_API_KEY=your-api-key
-   SUPABASE_ANON_KEY=your-anon-key
-   SUPABASE_SERVICE_KEY=your-service-key
+   # Railway
+   RAILWAY_DB_URL=postgresql://username:password@host.railway.app:port/database
    ```
 
 3. For migration commands, set the PostgreSQL connection URL:
@@ -35,8 +32,8 @@ For detailed Supabase setup instructions, see [Supabase Setup Guide](supabase_se
    # For local development
    export POSTGRESQL_URL="postgres://postgres:your-password@localhost:5432/byebob?sslmode=disable"
    
-   # For Supabase
-   export POSTGRESQL_URL="postgres://postgres:your-service-key@db.your-project-id.supabase.co:5432/postgres?sslmode=require"
+   # For Railway
+   export POSTGRESQL_URL="postgresql://username:password@host.railway.app:port/database"
    ```
 
 ## Migration System Setup
@@ -141,27 +138,6 @@ When implementing migrations, follow these guidelines:
    AFTER INSERT OR UPDATE OR DELETE ON employees
    FOR EACH ROW EXECUTE PROCEDURE audit_log();
    ```
-
-## Row Level Security (RLS)
-
-For Supabase, implement Row Level Security policies:
-
-```sql
--- Enable RLS
-ALTER TABLE employees ENABLE ROW LEVEL SECURITY;
-
--- Create policy for employees to see only their own data
-CREATE POLICY employee_own_data ON employees
-  FOR SELECT
-  USING (auth.uid() = user_id);
-
--- Create policy for managers to see their team members
-CREATE POLICY manager_team_data ON employees
-  FOR SELECT
-  USING (auth.uid() IN (
-    SELECT manager_id FROM employees WHERE id = auth.uid()
-  ));
-```
 
 ## Connection Pooling
 

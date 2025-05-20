@@ -3,10 +3,10 @@
 # Status: in-progress
 # Dependencies: 1
 # Priority: high
-# Description: Design and implement a robust, version-controlled database schema in Supabase (PostgreSQL) using modern Go practices. The solution should leverage golang-migrate for managing schema migrations, ensure best practices for schema evolution, and support maintainable, scalable development workflows.
+# Description: Design and implement a robust, version-controlled database schema in Railway.com (PostgreSQL) using modern Go practices. The solution should leverage golang-migrate for managing schema migrations, ensure best practices for schema evolution, and support maintainable, scalable development workflows.
 
 Key requirements:
-- Set up a Supabase project and configure PostgreSQL connection
+- Set up a Railway.com project and configure PostgreSQL connection
 - Use golang-migrate to manage migration files and apply schema changes, enabling version control and repeatable deployments[5][2]
 - Design the schema with clear table definitions, relationships, and constraints for core entities:
   - employees (id, first_name, middle_name, last_name, display_name, email, address, position_id, department_id, site_id, manager_id, employment_type, start_date, end_date, status, profile_picture_url)
@@ -19,19 +19,19 @@ Key requirements:
   - goal_checkins (id, goal_id, note, progress, created_at)
   - audit_logs (id, user_id, action, table_name, record_id, changes, created_at)
 - Establish foreign key relationships, constraints, and indexes for data integrity and performance
-- Configure Row Level Security (RLS) policies in Supabase for granular access control
+- Implement standard PostgreSQL security practices for access control
 - Implement a PostgreSQL connection pool using pgxpool for efficient resource management
 - Apply the repository pattern in Go to abstract database access, promote testability, and support clean architecture
 - Document schema changes and migration processes for team collaboration
 
 The implementation should follow modern Go conventions for database access, migration management, and schema design, ensuring maintainability and scalability for future development[5][2].
 # Details:
-1. Set up Supabase project and configure PostgreSQL connection
+1. Set up Railway.com project and configure PostgreSQL connection
 2. Implement migration system using golang-migrate, ensuring all schema changes are tracked and versioned[5][2]
 3. Create initial migration files for core tables as specified
 4. Define foreign key relationships and constraints for data integrity
 5. Implement indexes on frequently queried columns for performance optimization
-6. Configure Row Level Security (RLS) policies in Supabase for secure access control
+6. Configure standard PostgreSQL security practices for access control
 7. Set up a PostgreSQL connection pool using pgxpool for efficient database connections
 8. Implement the repository pattern in Go to abstract and organize database operations, supporting maintainable and testable code
 9. Document migration and schema management processes for developer onboarding and collaboration
@@ -41,7 +41,7 @@ The implementation should follow modern Go conventions for database access, migr
 2. Verify all tables are created with correct columns, relationships, and constraints
 3. Test foreign key constraints and cascading actions with sample data
 4. Validate that indexes improve query performance on key operations
-5. Test RLS policies with different user roles to ensure correct access control
+5. Test database security with different user roles to ensure correct access control
 6. Benchmark connection pool performance under simulated load
 7. Unit test repository layer methods for CRUD operations and error handling
 
@@ -80,8 +80,33 @@ Implementation details:
 
 The implementation follows best practices for PostgreSQL connection management with proper error handling and connection pooling strategies.
 </info added on 2025-05-19T20:44:08.716Z>
+<info added on 2025-05-20T10:13:22.265Z>
+1. Create a new Railway.com project using the Railway Dashboard
+2. Configure PostgreSQL connection settings in the application
+3. Set up environment variables for database credentials
+4. Test the connection to ensure it works correctly
+5. Document the setup process for team members
 
-## 2. Implement migration system with golang-migrate [pending]
+Implementation details:
+- Created a database connection package with pgxpool integration in internal/database/db.go
+- Implemented connection pooling with appropriate settings for optimal performance
+- Added connection retry and health check functionality to ensure database reliability
+- Created comprehensive documentation:
+  - Railway.com setup guide in docs/railway_setup.md
+  - Database setup instructions in docs/database_setup.md
+- Set up migration system infrastructure with golang-migrate (preparing for next subtask)
+- Added Makefile targets for common database operations
+- Created scripts:
+  - Migration initialization script (scripts/setup_migrations.sh)
+  - Test script to verify Railway.com/PostgreSQL connection
+- Established repository pattern:
+  - Defined repository interfaces in internal/repository/interfaces.go
+  - Implemented clean separation of concerns for database operations
+
+The implementation follows best practices for PostgreSQL connection management with proper error handling and connection pooling strategies. Railway.com provides a more streamlined deployment experience with automatic database provisioning and simplified connection management.
+</info added on 2025-05-20T10:13:22.265Z>
+
+## 2. Implement migration system with golang-migrate [done]
 ### Dependencies: 2.1
 ### Description: Set up golang-migrate to manage database schema migrations in a version-controlled way
 ### Details:
@@ -91,8 +116,27 @@ The implementation follows best practices for PostgreSQL connection management w
 4. Configure the migration system to work with PostgreSQL
 5. Create basic migration templates
 6. Document the migration workflow for the team
+<info added on 2025-05-20T10:33:33.190Z>
+1. Install golang-migrate CLI tool
+2. Create a migrations directory structure
+3. Set up migration commands in the Makefile
+4. Configure the migration system to work with PostgreSQL
+5. Create basic migration templates
+6. Document the migration workflow for the team
 
-## 3. Design and create core entity tables [pending]
+Implementation details:
+- Fixed MigrationManager methods in `internal/repository/migration.go` to properly use pgx v5 with golang-migrate library
+- Used `stdlib.OpenDBFromPool(m.pool)` to convert pgx connection to standard database/sql connection required by migrate package
+- Created migration files in `migrations/postgres` directory:
+  * 001_initial_schema.up.sql/down.sql: Core tables (employees, positions, departments, sites)
+  * 002_assessment_and_goals.up.sql/down.sql: Performance assessments and employee goals tables
+  * 003_audit_logs.up.sql/down.sql: Audit logging functionality with triggers
+- All migration files include proper BEGIN/COMMIT transaction blocks
+- Both up and down migrations are implemented for applying and rolling back changes
+- Created documentation in `docs/migration_workflow.md` with instructions on system usage
+</info added on 2025-05-20T10:33:33.190Z>
+
+## 3. Design and create core entity tables [done]
 ### Dependencies: 2.2
 ### Description: Design and implement the core entity tables including employees, positions, departments, and sites
 ### Details:
@@ -106,8 +150,47 @@ The implementation follows best practices for PostgreSQL connection management w
 4. Create indexes for frequently queried columns
 5. Run and test the migrations
 6. Document the schema design
+<info added on 2025-05-20T10:37:31.796Z>
+1. Create migration files for employee-related entities:
+   - employees (id, first_name, middle_name, last_name, display_name, email, address, position_id, department_id, site_id, manager_id, employment_type, start_date, end_date, status, profile_picture_url)
+   - positions (id, title, description, requirements)
+   - departments (id, name, description, lead_id)
+   - sites (id, name, city, address)
+2. Define appropriate data types and constraints
+3. Add foreign key relationships between tables
+4. Create indexes for frequently queried columns
+5. Run and test the migrations
+6. Document the schema design
 
-## 4. Create assessment and goal-related tables [pending]
+Implementation completed in migration file 001_initial_schema.up.sql with the following specifications:
+
+1. All required tables have been successfully created:
+   - employees table with all specified fields
+   - positions table with title, description, and requirements
+   - departments table with name, description, and lead_id
+   - sites table with name, city, and address fields
+
+2. Data types and constraints implemented:
+   - UUID primary keys with default uuid_generate_v4()
+   - VARCHAR for names and shorter text fields
+   - TEXT for longer content
+   - Timestamps for created_at and updated_at
+   - NOT NULL constraints on required fields
+   - UNIQUE constraint on employee email
+
+3. Foreign key relationships established:
+   - employees to positions, departments, sites, and manager (self-reference)
+   - departments to employees (lead_id)
+
+4. Indexes created for performance optimization:
+   - email, position_id, department_id, site_id, manager_id, and status
+
+5. All migrations are wrapped in transactions (BEGIN/COMMIT) for atomicity.
+
+6. Rollback capability implemented in down.sql file, with tables removed in the correct order to handle foreign key constraints.
+</info added on 2025-05-20T10:37:31.796Z>
+
+## 4. Create assessment and goal-related tables [done]
 ### Dependencies: 2.3
 ### Description: Design and implement the assessment and goal-related tables for performance management
 ### Details:
@@ -121,8 +204,11 @@ The implementation follows best practices for PostgreSQL connection management w
 4. Create indexes for frequently queried columns
 5. Run and test the migrations
 6. Document the schema design
+<info added on 2025-05-20T10:38:22.167Z>
+1. Create migration files for assessment and goal-related entities:\n   - assessment_templates (id, name, description, version, active)\n   - assessments (id, template_id, employee_id, reviewer_id, status, created_at, completed_at)\n   - goals (id, employee_id, title, description, time_frame, type, status, created_at, updated_at)\n   - goal_checkins (id, goal_id, note, progress, created_at)\n2. Define appropriate data types and constraints\n3. Add foreign key relationships to employees and other tables\n4. Create indexes for frequently queried columns\n5. Run and test the migrations\n6. Document the schema design\n\nImplementation details from migration file 002_assessment_and_goals.up.sql:\n\n1. All required tables have been created with the specified fields:\n   - assessment_templates: name, description, version, active status\n   - assessments: template_id, employee_id, reviewer_id, status, timestamps\n   - goals: employee_id, title, description, time_frame, type, status\n   - goal_checkins: goal_id, note, progress, timestamps\n\n2. Data types and constraints implemented:\n   - UUID primary keys with default uuid_generate_v4()\n   - VARCHAR for names, titles, and shorter text fields\n   - TEXT for longer content (descriptions, notes)\n   - INTEGER for version numbers and progress tracking (0-100 range CHECK constraint)\n   - BOOLEAN for active status flags\n   - Timestamps for created_at, updated_at, completed_at\n   - NOT NULL constraints on required fields\n\n3. Foreign key relationships established:\n   - assessments → assessment_templates (template_id)\n   - assessments → employees (employee_id, reviewer_id)\n   - goals → employees (employee_id)\n   - goal_checkins → goals (goal_id)\n\n4. Indexes created for performance optimization:\n   - template_id, employee_id, reviewer_id, status on assessments\n   - employee_id, status on goals\n   - goal_id on goal_checkins\n\n5. Migration wrapped in a transaction for atomicity\n\nThe implementation follows PostgreSQL best practices and successfully meets all requirements specified in the task.
+</info added on 2025-05-20T10:38:22.167Z>
 
-## 5. Set up audit logging and system tables [pending]
+## 5. Set up audit logging and system tables [done]
 ### Dependencies: 2.4
 ### Description: Implement audit logging and system utility tables for tracking changes
 ### Details:
@@ -134,21 +220,141 @@ The implementation follows best practices for PostgreSQL connection management w
 4. Create indexes for audit table queries
 5. Run and test the migrations
 6. Document the audit logging system
+<info added on 2025-05-20T10:39:00.894Z>
+1. Create migration files for audit and system tables:
+   - audit_logs (id, user_id, action, table_name, record_id, changes, created_at)
+   - Create any additional system tables needed for application functionality
+2. Set up triggers or hooks for automatically logging changes
+3. Define appropriate data types and constraints
+4. Create indexes for audit table queries
+5. Run and test the migrations
+6. Document the audit logging system
 
-## 6. Configure Row Level Security policies [pending]
+Implementation details from 003_audit_logs.up.sql:
+
+1. Created the audit_logs table with comprehensive fields:
+   - id (UUID primary key)
+   - user_id (UUID) - tracks the user making changes
+   - action (VARCHAR) - stores INSERT, UPDATE, DELETE operations
+   - table_name (VARCHAR) - records affected table
+   - record_id (UUID) - identifies specific modified record
+   - changes (JSONB) - stores changes in structured JSON format
+   - created_at (TIMESTAMP WITH TIME ZONE) - records timestamp
+
+2. Implemented performance-optimized indexes:
+   - user_id - for user-based filtering
+   - table_name - for table-based filtering
+   - record_id - for tracking specific record history
+   - created_at - for time-based operations
+
+3. Developed audit_log_func() in PL/pgSQL that:
+   - Handles all operation types (INSERT, UPDATE, DELETE)
+   - For UPDATEs, tracks only modified fields
+   - Stores changes in queryable JSONB format
+   - Uses session variables to track users (current_setting('app.user_id'))
+
+4. Configured triggers on all critical tables:
+   - employees, positions, departments, sites
+   - assessment_templates, assessments
+   - goals, goal_checkins
+
+5. Implementation follows PostgreSQL best practices:
+   - Transaction-based for atomicity
+   - Leverages PostgreSQL JSONB capabilities
+   - Efficient change tracking
+   - Strategic indexing for performance optimization
+</info added on 2025-05-20T10:39:00.894Z>
+
+## 6. Configure PostgreSQL security and access control [done]
 ### Dependencies: 2.5
-### Description: Set up Row Level Security (RLS) policies in Supabase for granular access control
+### Description: Set up standard PostgreSQL security practices for access control
 ### Details:
-1. Design RLS policies for each table based on user roles and permissions
-2. Implement RLS policies in Supabase for:
-   - Employees (managers can see their team members)
-   - Departments (department heads can manage their departments)
-   - Assessments (reviewers can see assessments they're assigned to)
-   - Goals (employees can see their own goals, managers can see their team's goals)
-3. Test the RLS policies with different user roles
-4. Document all RLS policies for future reference
+1. Design database user roles and permissions based on application requirements
+2. Implement PostgreSQL role-based access control for different user types
+3. Create database users with appropriate privileges for:
+   - Application service accounts
+   - Admin users
+   - Read-only users
+4. Set up schema-level and table-level permissions
+5. Implement column-level security where needed
+6. Configure connection security settings
+7. Test the security configuration with different user roles
+8. Document all security policies and configurations for future reference
+<info added on 2025-05-20T10:13:31.420Z>
+1. Design database user roles and permissions based on application requirements
+2. Implement PostgreSQL role-based access control for different user types
+3. Create database users with appropriate privileges for:
+   - Application service accounts
+   - Admin users
+   - Read-only users
+4. Set up schema-level and table-level permissions
+5. Implement column-level security where needed
+6. Configure connection security settings
+7. Test the security configuration with different user roles
+8. Document all security policies and configurations for future reference
+</info added on 2025-05-20T10:13:31.420Z>
+<info added on 2025-05-20T10:43:16.207Z>
+Implementation details for PostgreSQL security configuration for the ByeBob application:
 
-## 7. Implement database connection pool [pending]
+1. Created migration file 004_security_config.up.sql implementing:
+   - Three application roles with distinct responsibilities:
+     - byebob_app_role: For standard application operations with limited privileges
+     - byebob_admin_role: For administrative tasks requiring elevated privileges
+     - byebob_readonly_role: For reporting and read-only access patterns
+   - Database users mapped to these roles with appropriate authentication
+   - Granular permission structure using PostgreSQL's privilege system
+   - Row-level security (RLS) on sensitive tables like employees
+   - Security policies for different access patterns
+   - Default privileges configuration for future database objects
+
+2. Created rollback migration 004_security_config.down.sql for reverting security changes
+
+3. Developed utility script (scripts/db/update_db_passwords.sh) for password management:
+   - Multi-environment support (dev, staging, prod)
+   - Environment variable usage for secure password handling
+   - Error handling and validation mechanisms
+
+4. Added environment configuration examples in config/env.example.dev and config/env.example.prod with Railway.com integration
+
+5. Updated Makefile with new targets:
+   - db-security-config: For applying security migrations
+   - db-update-passwords: For updating database passwords across environments
+
+6. Created comprehensive documentation in docs/database_security.md covering:
+   - Role-based access control details
+   - Database user management
+   - Row-level security implementation
+   - Railway.com configuration with environment variables
+   - Connection examples for different user roles
+   - Password management best practices
+   - Developer guidelines for secure database usage
+
+The implementation follows PostgreSQL security best practices including privilege separation, least privilege principles, and secure password management.
+</info added on 2025-05-20T10:43:16.207Z>
+<info added on 2025-05-20T10:52:01.208Z>
+The PostgreSQL security configuration has been successfully deployed to Railway.com database. The deployment involved addressing several implementation challenges and applying the security configuration through proper migration processes:
+
+1. Fixed issues in the Row-Level Security (RLS) policy implementation:
+   - Replaced problematic policy WITH CHECK clause that incorrectly referenced OLD and NEW
+   - Implemented a proper trigger function for sensitive field protection
+   - Added appropriate BEFORE UPDATE trigger on the employees table to enforce security rules
+
+2. Migration execution details:
+   - Successfully used golang-migrate to apply migration 004_security_config.up.sql
+   - Verified migration success with database version check (confirmed at version 4)
+   - Validated proper application of all security roles and policies
+
+3. Active security configuration components:
+   - Role-based access control with three distinct roles (byebob_app_role, byebob_admin_role, byebob_readonly_role)
+   - Row-level security on sensitive tables functioning correctly
+   - Controlled access to critical employee fields through proper policies
+   - Default privileges configured for future database objects
+   - Database users with appropriate permissions aligned with least-privilege principles
+
+The implementation now provides a secure, least-privilege database access model for the ByeBob application while maintaining appropriate access levels for different user types. All security configurations have been successfully applied and verified in the Railway.com environment.
+</info added on 2025-05-20T10:52:01.208Z>
+
+## 7. Implement database connection pool [done]
 ### Dependencies: 2.6
 ### Description: Set up a PostgreSQL connection pool using pgxpool for efficient database connections
 ### Details:
@@ -159,7 +365,7 @@ The implementation follows best practices for PostgreSQL connection management w
 5. Add health checks for database connections
 6. Document the connection pool configuration for the team
 
-## 8. Create repository layer for data access [pending]
+## 8. Create repository layer for data access [done]
 ### Dependencies: 2.7
 ### Description: Implement the repository pattern in Go to abstract and organize database operations
 ### Details:
@@ -171,4 +377,63 @@ The implementation follows best practices for PostgreSQL connection management w
 6. Add proper error handling and logging
 7. Write unit tests for repository methods
 8. Document the repository pattern implementation
+<info added on 2025-05-20T11:10:12.634Z>
+1. Design repository interfaces for each domain entity (Employee, Department, Position, etc.)
+2. Implement PostgreSQL-specific repository implementations using pgx
+3. Create CRUD operations for each entity
+4. Add query methods for common access patterns
+5. Implement transaction support for multi-table operations
+6. Add proper error handling and logging
+7. Write unit tests for repository methods
+8. Document the repository pattern implementation
+
+Implementation details:
+- Created repository interfaces for Employee, Position, Department, and Site entities
+- Implemented PostgreSQL-specific implementations of these interfaces with complete CRUD operations
+- Developed a Repository Factory pattern to efficiently instantiate and manage repository instances
+- Added transaction support for atomic operations across multiple repositories
+- Used pgx v4 driver to align with the database package
+- Implemented advanced querying capabilities including filtering, pagination, and relationship navigation (e.g., getting employees by manager or department)
+- Applied best practices including proper error handling, parameterized queries to prevent SQL injection, and comprehensive transaction support
+- Successfully separated database operations from business logic through the repository abstraction layer
+</info added on 2025-05-20T11:10:12.634Z>
+
+## 9. Update database provider from Supabase to Railway.com [done]
+### Dependencies: 2.1
+### Description: Transition from Supabase to Railway.com as the PostgreSQL database provider
+### Details:
+1. Create a new Railway.com project and PostgreSQL instance
+2. Update database connection configuration to use Railway.com credentials
+3. Update environment variables and configuration files
+4. Modify any Supabase-specific code to use standard PostgreSQL features
+5. Create new documentation for Railway.com setup in docs/railway_setup.md
+6. Update database setup instructions in docs/database_setup.md
+7. Update connection test scripts to verify Railway.com/PostgreSQL connection
+8. Test all database functionality with the new provider
+9. Update CI/CD pipelines if needed to work with Railway.com
+<info added on 2025-05-20T11:19:11.029Z>
+1. Create a new Railway.com project and PostgreSQL instance
+2. Update database connection configuration to use Railway.com credentials
+3. Update environment variables and configuration files
+4. Modify any Supabase-specific code to use standard PostgreSQL features
+5. Create new documentation for Railway.com setup in docs/railway_setup.md
+6. Update database setup instructions in docs/database_setup.md
+7. Update connection test scripts to verify Railway.com/PostgreSQL connection
+8. Test all database functionality with the new provider
+9. Update CI/CD pipelines if needed to work with Railway.com
+
+Implementation details:
+1. Created comprehensive migration documentation in docs/supabase_to_railway_migration.md with detailed step-by-step instructions
+2. Added/updated Railway.com specific documentation in docs/railway_setup.md
+3. Updated database configuration in config/config.go to prioritize Railway connection string
+4. Fixed compatibility issues between pgx v4 (used in database package) and pgx v5 (used in repository)
+5. Updated internal documentation to reflect Railway.com as the primary database provider
+6. Created a main README.md with clear instructions for database configuration
+7. Successfully tested the Railway.com connection using make test-railway
+8. Ensured backward compatibility for existing database connections
+
+The migration approach preserves backward compatibility with existing code while preferring Railway.com when available. The PostgresConnectionString() function in config.go first checks for RAILWAY_DB_URL environment variable, and only falls back to individual connection parameters if not available.
+
+All PostgreSQL repository implementations have been verified to work correctly with Railway.com. The connection test confirms successful connectivity to the Railway PostgreSQL instance and verifies the presence of the expected database tables.
+</info added on 2025-05-20T11:19:11.029Z>
 
